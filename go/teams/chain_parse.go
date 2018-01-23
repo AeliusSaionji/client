@@ -25,24 +25,23 @@ func (s SCTeamID) ToTeamID() (keybase1.TeamID, error) { return keybase1.TeamIDFr
 type SCTeamMember keybase1.UserVersion
 
 type SCMapInviteIDToUV map[keybase1.TeamInviteID]keybase1.UserVersionPercentForm
-type SCMapInviteIDToUID map[keybase1.TeamInviteID]keybase1.UID
 
 type SCTeamSection struct {
-	ID               SCTeamID           `json:"id"`
-	Name             *SCTeamName        `json:"name,omitempty"`
-	Members          *SCTeamMembers     `json:"members,omitempty"`
-	Parent           *SCTeamParent      `json:"parent,omitempty"`
-	Subteam          *SCSubteam         `json:"subteam,omitempty"`
-	PerTeamKey       *SCPerTeamKey      `json:"per_team_key,omitempty"`
-	Admin            *SCTeamAdmin       `json:"admin,omitempty"`
-	Invites          *SCTeamInvites     `json:"invites,omitempty"`
-	CompletedInvites SCMapInviteIDToUV  `json:"completed_invites,omitempty"`
-	MootedInvites    SCMapInviteIDToUID `json:"mooted_invites,omitempty"`
-	Implicit         bool               `json:"is_implicit,omitempty"`
-	Public           bool               `json:"is_public,omitempty"`
-	Entropy          SCTeamEntropy      `json:"entropy,omitempty"`
-	Settings         *SCTeamSettings    `json:"settings,omitempty"`
-	KBFS             *SCTeamKBFS        `json:"kbfs,omitempty"`
+	ID               SCTeamID          `json:"id"`
+	Name             *SCTeamName       `json:"name,omitempty"`
+	Members          *SCTeamMembers    `json:"members,omitempty"`
+	Parent           *SCTeamParent     `json:"parent,omitempty"`
+	Subteam          *SCSubteam        `json:"subteam,omitempty"`
+	PerTeamKey       *SCPerTeamKey     `json:"per_team_key,omitempty"`
+	Admin            *SCTeamAdmin      `json:"admin,omitempty"`
+	Invites          *SCTeamInvites    `json:"invites,omitempty"`
+	CompletedInvites SCMapInviteIDToUV `json:"completed_invites,omitempty"`
+	MootedInvites    SCMapInviteIDToUV `json:"mooted_invites,omitempty"`
+	Implicit         bool              `json:"is_implicit,omitempty"`
+	Public           bool              `json:"is_public,omitempty"`
+	Entropy          SCTeamEntropy     `json:"entropy,omitempty"`
+	Settings         *SCTeamSettings   `json:"settings,omitempty"`
+	KBFS             *SCTeamKBFS       `json:"kbfs,omitempty"`
 }
 
 type SCTeamMembers struct {

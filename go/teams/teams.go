@@ -487,7 +487,7 @@ func (t *Team) getDowngradedUsers(ctx context.Context, ms *memberSet) (uids []ke
 	return uids, nil
 }
 
-func (t *Team) ChangeMembershipPermanent(ctx context.Context, req keybase1.TeamChangeReq, permanent bool, mootedInvites SCMapInviteIDToUID) (err error) {
+func (t *Team) ChangeMembershipPermanent(ctx context.Context, req keybase1.TeamChangeReq, permanent bool, mootedInvites SCMapInviteIDToUV) (err error) {
 	defer t.G().CTrace(ctx, "Team.ChangeMembershipPermanent", func() error { return err })()
 
 	if t.IsSubteam() && len(req.Owners) > 0 {

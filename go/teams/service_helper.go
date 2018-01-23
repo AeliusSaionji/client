@@ -1114,9 +1114,9 @@ func removeInviteID(ctx context.Context, team *Team, invID keybase1.TeamInviteID
 	return team.postTeamInvites(ctx, invites)
 }
 
-func mootInviteID(ctx context.Context, team *Team, invID keybase1.TeamInviteID, uid keybase1.UID) error {
-	mootMap := make(SCMapInviteIDToUID)
-	mootMap[invID] = uid
+func mootInviteID(ctx context.Context, team *Team, invID keybase1.TeamInviteID, uv keybase1.UserVersion) error {
+	mootMap := make(SCMapInviteIDToUV)
+	mootMap[invID] = uv.PercentForm()
 	return team.ChangeMembershipPermanent(ctx, keybase1.TeamChangeReq{}, false, mootMap)
 }
 

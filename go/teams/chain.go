@@ -1072,11 +1072,7 @@ func (t *TeamSigChainPlayer) addInnerLink(
 		t.obsoleteInvites(&res.newState, roleUpdates, payload.SignatureMetadata())
 
 		if team.MootedInvites != nil {
-			for id, uid := range team.MootedInvites {
-				_ = uid
-				delete(res.newState.inner.ActiveInvites, id)
-				delete(res.newState.inner.ObsoleteInvites, id)
-			}
+			t.completeInvites(&res.newState, team.MootedInvites)
 		}
 
 		// Note: If someone was removed, the per-team-key should be rotated. This is not checked though.
