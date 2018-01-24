@@ -1016,6 +1016,20 @@ func (t *TeamSigChainPlayer) addInnerLink(
 				invitees[uv.Uid] = true
 			}
 			nCompleted := len(team.CompletedInvites)
+			for inviteID, invitee := range team.MootedInvites {
+				invite, ok := prevState.inner.ActiveInvites[inviteID]
+				if !ok {
+					return res, NewImplicitTeamOperationError("mooted invite %v wasn't found", inviteID)
+				}
+				category, err := invite.Type.C()
+				if err != nil || category == keybase1.TeamInviteCategory_KEYBASE {
+					return res, NewImplicitTeamOperationError("mooted invite should not be type:keybase but is: %v, %v", category, err)
+				}
+				_, err = keybase1.ParseUserVersion(invitee)
+				if err != nil {
+					return res, err
+				}
+			}
 
 			// Check these two properties:
 			// - Every removal must come with an addition of a successor. Ignore role.
@@ -1062,6 +1076,14 @@ func (t *TeamSigChainPlayer) addInnerLink(
 				return res, NewImplicitTeamOperationError("illegal membership change: %d != %d",
 					nCompletedExpected, nCompleted)
 			}
+		}
+
+		if !prevState.IsImplicit() && team.MootedInvites != nil {
+			// TODO: Should MootedInvites be Implicit Team only?
+			// Maybe we can make use of that in normal teams as well?
+			// If we do this now, we are probably locking in this
+			// behavior.
+			return res, fmt.Errorf("Cannot have MootedInvites in non-implicit teams.")
 		}
 
 		res.newState = prevState.DeepCopy()

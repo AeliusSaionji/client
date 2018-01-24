@@ -239,5 +239,6 @@ func TestImplicitSBSConsolidation(t *testing.T) {
 	})
 
 	teamID2, err := ann.lookupImplicitTeam(false /* create */, expectedTeamName, false)
+	require.NoError(t, err)
 	require.Equal(t, teamID, teamID2)
 }
