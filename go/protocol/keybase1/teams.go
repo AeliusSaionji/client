@@ -368,6 +368,7 @@ type TeamChangeReq struct {
 	Readers          []UserVersion                           `codec:"readers" json:"readers"`
 	None             []UserVersion                           `codec:"none" json:"none"`
 	CompletedInvites map[TeamInviteID]UserVersionPercentForm `codec:"completedInvites" json:"completedInvites"`
+	MootedInvites    map[TeamInviteID]UserVersionPercentForm `codec:"mootedInvites" json:"mootedInvites"`
 }
 
 func (o TeamChangeReq) DeepCopy() TeamChangeReq {
@@ -439,6 +440,18 @@ func (o TeamChangeReq) DeepCopy() TeamChangeReq {
 			}
 			return ret
 		})(o.CompletedInvites),
+		MootedInvites: (func(x map[TeamInviteID]UserVersionPercentForm) map[TeamInviteID]UserVersionPercentForm {
+			if x == nil {
+				return nil
+			}
+			ret := make(map[TeamInviteID]UserVersionPercentForm)
+			for k, v := range x {
+				kCopy := k.DeepCopy()
+				vCopy := v.DeepCopy()
+				ret[kCopy] = vCopy
+			}
+			return ret
+		})(o.MootedInvites),
 	}
 }
 

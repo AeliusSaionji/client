@@ -337,6 +337,14 @@
             "keys": "TeamInviteID"
           },
           "name": "completedInvites"
+        },
+        {
+          "type": {
+            "type": "map",
+            "values": "UserVersionPercentForm",
+            "keys": "TeamInviteID"
+          },
+          "name": "mootedInvites"
         }
       ]
     },

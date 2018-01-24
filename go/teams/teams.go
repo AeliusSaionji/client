@@ -487,7 +487,7 @@ func (t *Team) getDowngradedUsers(ctx context.Context, ms *memberSet) (uids []ke
 	return uids, nil
 }
 
-func (t *Team) ChangeMembershipPermanent(ctx context.Context, req keybase1.TeamChangeReq, permanent bool, mootedInvites SCMapInviteIDToUV) (err error) {
+func (t *Team) ChangeMembershipPermanent(ctx context.Context, req keybase1.TeamChangeReq, permanent bool) (err error) {
 	defer t.G().CTrace(ctx, "Team.ChangeMembershipPermanent", func() error { return err })()
 
 	if t.IsSubteam() && len(req.Owners) > 0 {
@@ -539,16 +539,6 @@ func (t *Team) ChangeMembershipPermanent(ctx context.Context, req keybase1.TeamC
 		sigPayloadArgs.prePayload = libkb.JSONPayload{"permanent": true}
 	}
 
-	if mootedInvites != nil && len(mootedInvites) > 0 {
-		section.MootedInvites = mootedInvites
-		if section.Members == nil {
-			// Just mooted invites is fine - if TeamChangeReq is empty,
-			// changeMembershipSection returned nil members. But we need
-			// empty Members in order to have a valid link.
-			section.Members = &SCTeamMembers{}
-		}
-	}
-
 	if err := t.postChangeItem(ctx, section, libkb.LinkTypeChangeMembership, merkleRoot, sigPayloadArgs); err != nil {
 		return err
 	}
@@ -559,7 +549,7 @@ func (t *Team) ChangeMembershipPermanent(ctx context.Context, req keybase1.TeamC
 }
 
 func (t *Team) ChangeMembership(ctx context.Context, req keybase1.TeamChangeReq) error {
-	return t.ChangeMembershipPermanent(ctx, req, false, nil)
+	return t.ChangeMembershipPermanent(ctx, req, false)
 }
 
 func (t *Team) downgradeIfOwnerOrAdmin(ctx context.Context) (needsReload bool, err error) {
@@ -1130,6 +1120,15 @@ func (t *Team) changeMembershipSection(ctx context.Context, req keybase1.TeamCha
 	section.CompletedInvites = req.CompletedInvites
 	section.Implicit = t.IsImplicit()
 	section.Public = t.IsPublic()
+
+	section.MootedInvites = req.MootedInvites
+	if len(section.MootedInvites) > 0 && section.Members == nil {
+		// Just mooted invites is fine - if TeamChangeReq is empty,
+		// changeMembershipSection returned nil members. But we need
+		// empty Members in order to have a valid link.
+		section.Members = &SCTeamMembers{}
+	}
+
 	return section, secretBoxes, implicitAdminBoxes, memSet, nil
 }
 

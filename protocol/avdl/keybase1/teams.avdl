@@ -115,6 +115,7 @@ protocol teams {
     array<UserVersion> readers;
     array<UserVersion> none;
     map<TeamInviteID,UserVersionPercentForm> completedInvites;
+    map<TeamInviteID,UserVersionPercentForm> mootedInvites;
   }
 
   record TeamPlusApplicationKeys {
