@@ -242,3 +242,48 @@ func TestImplicitSBSConsolidation(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, teamID, teamID2)
 }
+
+func TestImplicitSBSPromotion(t *testing.T) {
+	t.Skip()
+	/*
+		Until 6997 is done, this is going to break with
+
+		test_logger.go:72: ^M2018-01-24 21:22:21.14714 handler.go:104: [D]
+		- team.handleSBSSingle(teamID: 82e88ad8ca0a278b0fcb2eeda7f35124,
+		invitee: {InviteID:343fa8f3ddab9a56db790172b8a28127
+		Uid:c8027e5c403b596f6807e33077d34719 EldestSeqno:1 Role:OWNER}) ->
+		ERROR: cannot change member role in implicit team (error 2682)
+		[tags:GRGIBM=G_OObxL2tsjw,CLKR=wwdu6gEESffK]
+	*/
+
+	tt := newTeamTester(t)
+	defer tt.cleanup()
+
+	ann := tt.addUser("ann")
+	bob := tt.addUser("bob")
+
+	impteamName := fmt.Sprintf("%v,%v@rooter#%v", ann.username, bob.username, bob.username)
+	teamID, err := ann.lookupImplicitTeam(true /* create */, impteamName, false)
+	require.NoError(t, err)
+
+	t.Logf("Created team %s -> %s", impteamName, teamID)
+
+	bob.proveRooter()
+	t.Logf("Bob (%s) proved rooter", bob.username)
+
+	expectedTeamName := fmt.Sprintf("%v,%v", ann.username, bob.username)
+	pollForConditionWithTimeout(t, 10*time.Second, "team consolidated to ann,bob", func(ctx context.Context) bool {
+		team, err := teams.Load(ctx, ann.tc.G, keybase1.LoadTeamArg{
+			ID:          teamID,
+			ForceRepoll: true,
+		})
+		require.NoError(t, err)
+		displayName, err := team.ImplicitTeamDisplayName(context.Background())
+		t.Logf("Got team back: %s", displayName.String())
+		return displayName.String() == expectedTeamName
+	})
+
+	teamID2, err := ann.lookupImplicitTeam(false /* create */, expectedTeamName, false)
+	require.NoError(t, err)
+	require.Equal(t, teamID, teamID2)
+}

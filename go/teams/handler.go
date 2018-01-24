@@ -210,10 +210,12 @@ func handleSBSSingle(ctx context.Context, g *libkb.GlobalContext, teamID keybase
 				return fmt.Errorf("newer version of user %s already exists in team %q (%v > %v)",
 					verifiedInvitee.Uid, team.Name(), existingUV.EldestSeqno,
 					verifiedInvitee.EldestSeqno)
+			} else if existingUV.EldestSeqno < verifiedInvitee.EldestSeqno {
+				g.Log.CDebugf(ctx, "removing old version of user: %s (%v -> %v)", verifiedInvitee.Uid,
+					existingUV.EldestSeqno, verifiedInvitee.EldestSeqno)
+				req.None = []keybase1.UserVersion{existingUV}
 			}
-			g.Log.CDebugf(ctx, "removing old version of user: %s (%v -> %v)", verifiedInvitee.Uid,
-				existingUV.EldestSeqno, verifiedInvitee.EldestSeqno)
-			req.None = []keybase1.UserVersion{existingUV}
+			// If EldestSeqnos are equal - it means it's an SBS promotion.
 		}
 
 		g.Log.CDebugf(ctx, "checks passed, proceeding with team.ChangeMembership, req = %+v", req)
