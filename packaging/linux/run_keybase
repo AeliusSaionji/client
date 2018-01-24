@@ -174,7 +174,9 @@ main() {
   #    we tell them to do it after updates.
   kill_all
   mkdir -p "$mountdir"
-  keybase config set mountdir "$mountdir"
+  if ! keybase config get mountdir &> /dev/null; then
+    keybase config set mountdir "$mountdir"
+  fi
 
   if wants_systemd ; then
       start_systemd
